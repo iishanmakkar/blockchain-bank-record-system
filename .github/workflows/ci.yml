@@ -1,0 +1,38 @@
+name: Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test-smart-contracts:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    - name: Install Hardhat dependencies
+      run: npm install
+    - name: Run Smart Contract Tests
+      run: npx hardhat test
+
+  build-docker-images:
+    needs: build-and-test-smart-contracts
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Build Backend Image
+      run: docker build -t bank-registry-backend:latest ./backend
+      
+    - name: Build Frontend Image
+      run: docker build -t bank-registry-frontend:latest ./frontend
+      
+    # In a real pipeline, you would push these to AWS ECR or Docker Hub here
+    # - name: Push to Registry
+    #   run: docker push my-registry/bank-registry-backend:latest
