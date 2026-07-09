@@ -9,10 +9,9 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Read ABI from Hardhat artifacts (in parent directory)
-const artifactPath = path.resolve(__dirname, '../../artifacts/contracts/BankRecordRegistry.sol/BankRecordRegistry.json');
-const contractArtifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
-const contractABI = contractArtifact.abi;
+// Read ABI locally to support Docker containerization
+const artifactPath = path.resolve(__dirname, '../abi.json');
+const contractABI = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
 
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const wallet = new ethers.Wallet(process.env.ADMIN_PRIVATE_KEY, provider);
